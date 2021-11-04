@@ -30,6 +30,10 @@ io.on('connection', (socket) => {
     socket.join(roomId);
     socket.broadcast.to(roomId).emit('user-connected', userId);
   });
+
+  socket.on('move', (msg) => {
+    socket.broadcast.emit('move', msg);
+  });
 });
 
 server.listen(process.env.PORT || 3000);

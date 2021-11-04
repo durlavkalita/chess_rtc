@@ -1,9 +1,45 @@
 const socket = io('/');
 const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
+const muteButton = document.querySelector("#muteButton");
+const stopVideo = document.querySelector("#stopVideo");
+const inviteButton = document.querySelector("#inviteButton");
 myVideo.muted = true;
 
-const user = prompt("Enter your name");
+var board;
+var game;
+
+window.onload = function () {
+  initGame();
+};
+
+var initGame = function () {
+  var config = {
+    draggable: true,
+    position: 'start',
+    // onDragStart: onDragStart,
+    onDrop: handleMove,
+    // onSnapEnd: onSnapEnd
+  };
+
+  game = new Chess();
+  board = new ChessBoard('myBoard', config);
+}
+
+var handleMove = function (source, target) {
+  var move = game.move({ from: source, to: target });
+  if (move == null) return 'snapback';
+  else {
+    socket.emit('move', move);
+  }
+}
+
+socket.on('move', function (msg) {
+  game.move(msg);
+  board.position(game.fen());
+})
+
+// const user = prompt("Enter your name");
 
 var peer = new Peer(undefined, {
   path: '/peerjs',
@@ -51,3 +87,40 @@ const addVideoStream = (video, stream) => {
     videoGrid.append(video);
   });
 };
+
+muteButton.addEventListener("click", () => {
+  const enabled = myVideoStream.getAudioTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getAudioTracks()[0].enabled = false;
+    html = `<i class="fas fa-microphone-slash"></i>`;
+    muteButton.classList.toggle("background__red");
+    muteButton.innerHTML = html;
+  } else {
+    myVideoStream.getAudioTracks()[0].enabled = true;
+    html = `<i class="fas fa-microphone"></i>`;
+    muteButton.classList.toggle("background__red");
+    muteButton.innerHTML = html;
+  }
+});
+
+stopVideo.addEventListener("click", () => {
+  const enabled = myVideoStream.getVideoTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getVideoTracks()[0].enabled = false;
+    html = `<i class="fas fa-video-slash"></i>`;
+    stopVideo.classList.toggle("background__red");
+    stopVideo.innerHTML = html;
+  } else {
+    myVideoStream.getVideoTracks()[0].enabled = true;
+    html = `<i class="fas fa-video"></i>`;
+    stopVideo.classList.toggle("background__red");
+    stopVideo.innerHTML = html;
+  }
+});
+
+inviteButton.addEventListener("click", (e) => {
+  prompt(
+    "Copy this link and send it to people you want to meet with",
+    window.location.href
+  );
+});
