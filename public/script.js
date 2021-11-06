@@ -23,7 +23,7 @@ var initGame = function () {
   };
 
   game = new Chess();
-  board = new ChessBoard('myBoard', config);
+  board = new ChessBoard('mainBoard', config);
 }
 
 var handleMove = function (source, target) {
@@ -39,7 +39,7 @@ socket.on('move', function (msg) {
   board.position(game.fen());
 })
 
-// const user = prompt("Enter your name");
+const user = prompt("Enter your name");
 
 var peer = new Peer(undefined, {
   path: '/peerjs',
@@ -77,7 +77,7 @@ const connectToNewUser = (userId, stream) => {
 };
 
 peer.on('open', (id) => {
-  socket.emit('join-room', ROOM_ID, id);
+  socket.emit('join-room', ROOM_ID, id, user);
 });
 
 const addVideoStream = (video, stream) => {
@@ -123,4 +123,33 @@ inviteButton.addEventListener("click", (e) => {
     "Copy this link and send it to people you want to meet with",
     window.location.href
   );
+});
+
+let text = document.querySelector("#chat_message");
+let send = document.getElementById("send");
+let messages = document.querySelector(".messages");
+
+send.addEventListener("click", (e) => {
+  if (text.value.length !== 0) {
+    socket.emit("message", text.value);
+    text.value = "";
+  }
+});
+
+text.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && text.value.length !== 0) {
+    socket.emit("message", text.value);
+    text.value = "";
+  }
+});
+
+socket.on("createMessage", (message, userName) => {
+  console.log('msg');
+  messages.innerHTML =
+    messages.innerHTML +
+    `<div class="message">
+        <b><i class="far fa-user-circle"></i> <span> ${userName === user ? "me" : userName
+    }</span> </b>
+        <span>${message}</span>
+    </div>`;
 });
