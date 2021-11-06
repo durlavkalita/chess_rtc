@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
-var privateKey = fs.readFileSync('./ssl/privkey.pem');
-var certificate = fs.readFileSync('./ssl/cert.pem');
+// var privateKey = fs.readFileSync('./ssl/privkey.pem');
+// var certificate = fs.readFileSync('./ssl/cert.pem');
 require('dotenv').config()
 const app = express();
 // const server = require('https').createServer({ key: privateKey, cert: certificate }, app);
