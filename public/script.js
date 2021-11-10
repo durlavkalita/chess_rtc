@@ -34,13 +34,13 @@ var initGame = function () {
 
   $('#position').on('click', () => {
     board = new ChessBoard('mainBoard', configPosition);
-    document.getElementsByClassName('pos-config')[0].style.display = 'block'
+    document.getElementsByClassName('pos-config')[0].style.display = 'block';
   });
 
   $('#analysis').on('click', () => {
     game = new Chess()
     board = new ChessBoard('mainBoard', configAnalysis)
-
+    document.getElementsByClassName('pos-config')[0].style.display = 'none'
     $fen.html('')
     currentFen = ''
     $pgn.html('')

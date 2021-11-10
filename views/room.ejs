@@ -9,14 +9,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
     integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+    integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
   <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
   <script>
     const ROOM_ID = "<%= roomId %>";
   </script>
-  <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
-  <link rel="stylesheet" href="dist/vue-chessboard.css" />
 </head>
 
 <body>
@@ -34,31 +34,31 @@
                   src="https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg" alt="Workflow">
               </div>
               <!-- <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                  <a href="#"
-                    class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                    Dashboard
-                  </a>
+
+                <a href="#"
+                  class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                  Dashboard
+                </a>
 
 
-                  <a href="#"
-                    class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                    Team
-                  </a>
+                <a href="#"
+                  class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                  Team
+                </a>
 
 
-                  <a href="#"
-                    class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                    Projects
-                  </a>
+                <a href="#"
+                  class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                  Projects
+                </a>
 
 
-                  <a href="#"
-                    class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                    Calendar
-                  </a>
+                <a href="#"
+                  class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                  Calendar
+                </a>
 
-                </div> -->
+              </div> -->
             </div>
           </div>
         </div>
@@ -94,10 +94,10 @@
                               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r border-l"
                               id="clearBtn">Clear Board</button>
                             </button>
-                            <button
+                            <!-- <button
                               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r border-l"
                               id="flipBtn">Flip Board</button>
-                            </button>
+                            </button> -->
                           </div>
                           <div>
                             <label for="fen">FEN:</label>
@@ -165,14 +165,19 @@
 
   </div>
 
-  <script src="/dist/vue-chessboard.browser.js"></script>
-
-  <!-- chess.js -->
+  <!-- chessboard.js -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+    integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+    crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
     integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script src="script.js"></script>
+  <!-- <script src="vue.js" type="module"></script> -->
 
 </body>
 
