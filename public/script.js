@@ -6,24 +6,49 @@ const stopVideo = document.querySelector("#stopVideo");
 const inviteButton = document.querySelector("#inviteButton");
 myVideo.muted = true;
 
-// var board;
-// var game;
+var board;
+var game;
+var $status = $('#status')
+var $fen = $('#fen')
+var $pgn = $('#pgn')
+var currentFen = '';
 
-// window.onload = function () {
-//   initGame();
-// };
+window.onload = function () {
+  initGame();
+};
 
 var initGame = function () {
-  var config = {
+  var configAnalysis = {
     draggable: true,
     position: 'start',
-    // onDragStart: onDragStart,
     onDrop: handleMove,
-    // onSnapEnd: onSnapEnd
   };
+  var configPosition = {
+    draggable: true,
+    dropOffBoard: 'trash',
+    sparePieces: true
+  }
 
   game = new Chess();
-  board = new ChessBoard('mainBoard', config);
+  board = new ChessBoard('mainBoard', configAnalysis);
+
+  $('#position').on('click', () => {
+    board = new ChessBoard('mainBoard', configPosition);
+    document.getElementsByClassName('pos-config')[0].style.display = 'block'
+  });
+
+  $('#analysis').on('click', () => {
+    game = new Chess()
+    board = new ChessBoard('mainBoard', configAnalysis)
+
+    $fen.html('')
+    currentFen = ''
+    $pgn.html('')
+  });
+
+  $('#clearBtn').on('click', () => {
+    board = new ChessBoard('mainBoard', configPosition);
+  })
 }
 
 var handleMove = function (source, target) {
@@ -32,6 +57,10 @@ var handleMove = function (source, target) {
   else {
     socket.emit('move', move);
   }
+  $status.html(status)
+  $fen.html(game.fen())
+  currentFen = game.fen()
+  $pgn.html(game.pgn())
 }
 
 socket.on('move', function (msg) {
