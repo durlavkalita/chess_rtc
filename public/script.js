@@ -6,12 +6,12 @@ const stopVideo = document.querySelector("#stopVideo");
 const inviteButton = document.querySelector("#inviteButton");
 myVideo.muted = true;
 
-var board;
-var game;
+// var board;
+// var game;
 
-window.onload = function () {
-  initGame();
-};
+// window.onload = function () {
+//   initGame();
+// };
 
 var initGame = function () {
   var config = {
