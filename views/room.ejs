@@ -106,25 +106,27 @@
                             <div id="pgn"></div>
                           </div>
                         </div>
-                        <div class="video-cols md:col-span-6 col-span-12">
-                          <div class="">
-                            <div id="video-grid">
-
+                        <div class="video-cols md:col-span-6 col-span-12 border-2 mx-4">
+                          <div class="flex justify-between py-2 px-2 bg-gray-200 content-center items-center">
+                            <div class="flex text-lg font-semibold">Participants</div>
+                            <div class="flex gap-2">
+                              <div id="stopVideo" class="text-red-500 bg-white p-2 my-2">
+                                <i class="fa fa-video-camera fa-lg"></i>
+                              </div>
+                              <div id="muteButton" class="text-green-500 bg-white p-2 my-2">
+                                <i class="fa fa-microphone fa-lg"></i>
+                              </div>
+                              <div id="inviteButton" class="text-blue-500 bg-white p-2 my-2">
+                                <i class="fas fa-user-plus fa-lg"></i>
+                              </div>
                             </div>
                           </div>
-                          <div class="flex justify-between">
-                            <div class="flex">
-                              <div id="stopVideo" class="options__button">
-                                <i class="fa fa-video-camera"></i>
-                              </div>
-                              <div id="muteButton" class="options__button">
-                                <i class="fa fa-microphone"></i>
-                              </div>
+                          <div class="">
+                            <div id="participants-list">
+
                             </div>
-                            <div class="flex">
-                              <div id="inviteButton" class="options__button">
-                                <i class="fas fa-user-plus"></i>
-                              </div>
+                            <div id="video-grid">
+
                             </div>
                           </div>
                         </div>
@@ -134,26 +136,28 @@
                 </section>
 
                 <!-- Secondary column (hidden on smaller screens) -->
-                <aside class="hidden lg:block lg:flex-shrink-0 lg:order-first">
+                <aside class="hidden lg:block lg:flex-shrink-0 lg:order-first h-screen">
                   <div class="h-full relative flex flex-col w-96 border-r border-gray-200 bg-gray-100">
-                    <x-placeholder class="h-full">
-                      <div class="p-6 h-full">
-                        <div class="">
-                          <div class="main__chat_window">
-                            <div class="messages">
+                    <div class="h-full">
+                      <div class="flex flex-col justify-between">
+                        <div class="flex">
+                          <div class="messages">
 
-                            </div>
                           </div>
-                          <div class="main__message_container flex absolute bottom-0 left-10">
-                            <input class="w-full rounded-md px-4" id="chat_message" type="text" autocomplete="off"
-                              placeholder="Type message here...">
-                            <div id="send" class="options__button">
-                              <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-10">
+                          <div class="flex content-center items-center">
+                            <div>
+                              <input class="w-full rounded-md p-4" id="chat_message" type="text" autocomplete="off"
+                                placeholder="Type message here...">
+                            </div>
+                            <div id="send" class="bg-blue-100 my-2">
+                              <i class="fa fa-arrow-right fa-lg p-5" aria-hidden="true"></i>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </x-placeholder>
+                    </div>
                   </div>
                 </aside>
               </main>

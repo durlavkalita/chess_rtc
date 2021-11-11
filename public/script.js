@@ -4,14 +4,27 @@ const myVideo = document.createElement('video');
 const muteButton = document.querySelector("#muteButton");
 const stopVideo = document.querySelector("#stopVideo");
 const inviteButton = document.querySelector("#inviteButton");
+const participantsList = document.getElementById('participants-list');
 myVideo.muted = true;
 
+const peers = {}
 var board;
 var game;
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
 var currentFen = '';
+
+var configAnalysis = {
+  draggable: true,
+  position: 'start',
+  onDrop: handleMove,
+};
+var configPosition = {
+  draggable: true,
+  dropOffBoard: 'trash',
+  sparePieces: true
+}
 
 window.onload = function () {
   initGame();
@@ -20,21 +33,23 @@ window.onload = function () {
 var initGame = function () {
   var configAnalysis = {
     draggable: true,
-    position: 'start',
+    position: localStorage.getItem('currentFen') ? localStorage.getItem('currentFen') : 'start',
     onDrop: handleMove,
   };
   var configPosition = {
     draggable: true,
     dropOffBoard: 'trash',
-    sparePieces: true
+    sparePieces: true,
+    onDrop: handleDrop
   }
 
-  game = new Chess();
+  game = localStorage.getItem('currentFen') ? new Chess(localStorage.getItem('currentFen')) : new Chess();
   board = new ChessBoard('mainBoard', configAnalysis);
 
   $('#position').on('click', () => {
     board = new ChessBoard('mainBoard', configPosition);
     document.getElementsByClassName('pos-config')[0].style.display = 'block';
+    socket.emit('changeBoard', 'position');
   });
 
   $('#analysis').on('click', () => {
@@ -44,6 +59,7 @@ var initGame = function () {
     $fen.html('')
     currentFen = ''
     $pgn.html('')
+    socket.emit('changeBoard', 'analysis');
   });
 
   $('#clearBtn').on('click', () => {
@@ -57,10 +73,14 @@ var handleMove = function (source, target) {
   else {
     socket.emit('move', move);
   }
-  $status.html(status)
   $fen.html(game.fen())
   currentFen = game.fen()
   $pgn.html(game.pgn())
+  saveData(game.fen());
+}
+
+var handleDrop = function (source, target, piece, newPos, oldPos, orientation) {
+  socket.emit('positionPieceDrop', newPos);
 }
 
 socket.on('move', function (msg) {
@@ -68,18 +88,60 @@ socket.on('move', function (msg) {
   board.position(game.fen());
 })
 
-const user = prompt("Enter your name");
+socket.on('changeBoard', function (newconfig) {
+  if (newconfig == 'analysis') {
+    game = new Chess()
+    board = new ChessBoard('mainBoard', configAnalysis)
+    document.getElementsByClassName('pos-config')[0].style.display = 'none'
+    $fen.html('')
+    currentFen = ''
+    $pgn.html('')
+  } else if (newconfig == 'position') {
+    board = new ChessBoard('mainBoard', configPosition);
+    document.getElementsByClassName('pos-config')[0].style.display = 'block';
+  }
+})
+
+socket.on('positionPieceDrop', function (msg) {
+  board = new ChessBoard('mainBoard', {
+    draggable: true,
+    dropOffBoard: 'trash',
+    position: msg,
+    sparePieces: true,
+    onDrop: handleDrop
+  });
+  document.getElementsByClassName('pos-config')[0].style.display = 'block';
+
+})
+
+var user = prompt("Enter your name");
+var users = []
+if (user == '') {
+  var user = prompt('Enter your name');
+}
+appendToStorage('users', user);
+users = localStorage.getItem('users').split(' ');
+
+users.forEach(user => {
+  const span = document.createElement('span')
+  span.innerHTML = user
+  participantsList.append(span)
+});
 
 var peer = new Peer(undefined, {
   path: '/peerjs',
   host: '/',
   port: '443'
 })
+// var peer = new Peer(undefined, {
+//   host: '/',
+//   port: '3001'
+// })
 
 let myVideoStream;
 navigator.mediaDevices.getUserMedia({
   audio: true,
-  video: true,
+  video: false,
 }).then((stream) => {
   myVideoStream = stream;
   addVideoStream(myVideo, stream);
@@ -92,17 +154,31 @@ navigator.mediaDevices.getUserMedia({
     });
   });
 
-  socket.on('user-connected', (userId) => {
-    connectToNewUser(userId, stream);
+  socket.on('user-connected', (userId, userName) => {
+    connectToNewUser(userId, userName, stream);
   });
 });
 
-const connectToNewUser = (userId, stream) => {
+socket.on('user-disconnected', (userId, userName) => {
+  if (peers[userId]) peers[userId].close()
+  const i = users.indexOf(userName)
+  if (i > -1) {
+    users.splice(i, 1);
+  }
+  console.log(users);
+})
+
+const connectToNewUser = (userId, userName, stream) => {
+  users.push(userName)
   const call = peer.call(userId, stream);
   const video = document.createElement('video');
   call.on('stream', (userVideoStream) => {
     addVideoStream(video, userVideoStream);
   });
+  peers[userId] = call
+  const span = document.createElement('span')
+  span.innerHTML = userName
+  participantsList.append(span)
 };
 
 peer.on('open', (id) => {
@@ -182,3 +258,15 @@ socket.on("createMessage", (message, userName) => {
         <span>${message}</span>
     </div>`;
 });
+
+function saveData(fen) {
+  if (fen) {
+    localStorage.setItem('currentFen', fen);
+  }
+}
+
+function appendToStorage(name, data) {
+  var old = localStorage.getItem(name);
+  if (old === null) old = "";
+  localStorage.setItem(name, old + " " + data);
+}

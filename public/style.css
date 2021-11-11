@@ -43,6 +43,7 @@ video {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
+  display: none;
 }
 
 .options {
@@ -78,10 +79,19 @@ video {
 
 #video-grid {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
 .spare-pieces-7492f {
   display: flex;
+}
+
+#participants-list {
+  display: flex;
+  flex-direction: column;
+}
+
+#participants-list > span {
+  display: flex;
+  justify-content: start;
+  padding: 1rem .5rem;
 }

@@ -16,6 +16,11 @@ const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
   debug: true,
 });
+// const peerServer = ExpressPeerServer(server, {
+//   debug: true,
+//   host: '/',
+//   port: '3001'
+// });
 
 var indexRouter = require('./routes/index');
 
@@ -30,13 +35,22 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   socket.on('join-room', (roomId, userId, userName) => {
     socket.join(roomId);
-    socket.broadcast.to(roomId).emit('user-connected', userId);
+    socket.broadcast.to(roomId).emit('user-connected', userId, userName);
+    socket.on('user-disconnected', () => {
+      socket.broadcast.to(roomId).emit('user-disconnected', userId, userName)
+    })
     socket.on("message", (message) => {
       io.to(roomId).emit("createMessage", message, userName);
     });
     socket.on('move', (msg) => {
       socket.broadcast.to(roomId).emit('move', msg);
     });
+    socket.on('changeBoard', (newconfig) => {
+      socket.broadcast.to(roomId).emit('changeBoard', newconfig);
+    })
+    socket.on('positionPieceDrop', (msg) => {
+      socket.broadcast.to(roomId).emit('positionPieceDrop', msg);
+    })
   });
 });
 
