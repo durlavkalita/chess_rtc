@@ -15,16 +15,16 @@ const io = require('socket.io')(server, {
 const { ExpressPeerServer } = require('peer');
 
 // for heroku deployment
-// const peerServer = ExpressPeerServer(server, {
-//   debug: true,
-// });
-
-// for localhost testing
 const peerServer = ExpressPeerServer(server, {
   debug: true,
-  host: '/',
-  port: '3001'
 });
+
+// for localhost testing
+// const peerServer = ExpressPeerServer(server, {
+//   debug: true,
+//   host: '/',
+//   port: '3001'
+// });
 
 var indexRouter = require('./routes/index');
 

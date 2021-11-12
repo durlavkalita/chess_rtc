@@ -129,17 +129,17 @@ users.forEach(user => {
 });
 
 // for heroku deployment
-// var peer = new Peer(undefined, {
-//   path: '/peerjs',
-//   host: '/',
-//   port: '443'
-// })
+var peer = new Peer(undefined, {
+  path: '/peerjs',
+  host: '/',
+  port: '443'
+})
 
 // for localhost testing - run peerjs --port 3001
-var peer = new Peer(undefined, {
-  host: '/',
-  port: '3001'
-})
+// var peer = new Peer(undefined, {
+//   host: '/',
+//   port: '3001'
+// })
 
 navigator.mediaDevices.getUserMedia({
   audio: true,
