@@ -5,8 +5,11 @@ const muteButton = document.querySelector("#muteButton");
 const stopVideo = document.querySelector("#stopVideo");
 const inviteButton = document.querySelector("#inviteButton");
 const participantsList = document.getElementById('participants-list');
-myVideo.muted = true;
-
+const sessionClear = document.getElementById('clear-session');
+let text = document.querySelector("#chat_message");
+let send = document.getElementById("send");
+let messages = document.querySelector(".messages");
+let myVideoStream;
 const peers = {}
 var board;
 var game;
@@ -14,6 +17,7 @@ var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
 var currentFen = '';
+myVideo.muted = true;
 
 var configAnalysis = {
   draggable: true,
@@ -116,29 +120,27 @@ socket.on('positionPieceDrop', function (msg) {
 
 var user = prompt("Enter your name");
 var users = []
-if (user == '') {
-  var user = prompt('Enter your name');
-}
 appendToStorage('users', user);
 users = localStorage.getItem('users').split(' ');
-
 users.forEach(user => {
   const span = document.createElement('span')
   span.innerHTML = user
   participantsList.append(span)
 });
 
-var peer = new Peer(undefined, {
-  path: '/peerjs',
-  host: '/',
-  port: '443'
-})
+// for heroku deployment
 // var peer = new Peer(undefined, {
+//   path: '/peerjs',
 //   host: '/',
-//   port: '3001'
+//   port: '443'
 // })
 
-let myVideoStream;
+// for localhost testing - run peerjs --port 3001
+var peer = new Peer(undefined, {
+  host: '/',
+  port: '3001'
+})
+
 navigator.mediaDevices.getUserMedia({
   audio: true,
   video: false,
@@ -159,17 +161,8 @@ navigator.mediaDevices.getUserMedia({
   });
 });
 
-socket.on('user-disconnected', (userId, userName) => {
-  if (peers[userId]) peers[userId].close()
-  const i = users.indexOf(userName)
-  if (i > -1) {
-    users.splice(i, 1);
-  }
-  console.log(users);
-})
-
 const connectToNewUser = (userId, userName, stream) => {
-  users.push(userName)
+  // users.push(userName)
   const call = peer.call(userId, stream);
   const video = document.createElement('video');
   call.on('stream', (userVideoStream) => {
@@ -197,29 +190,12 @@ muteButton.addEventListener("click", () => {
   const enabled = myVideoStream.getAudioTracks()[0].enabled;
   if (enabled) {
     myVideoStream.getAudioTracks()[0].enabled = false;
-    html = `<i class="fas fa-microphone-slash"></i>`;
-    muteButton.classList.toggle("background__red");
+    html = `<i class="fas fa-microphone-slash fa-lg text-red-500"></i>`;
     muteButton.innerHTML = html;
   } else {
     myVideoStream.getAudioTracks()[0].enabled = true;
-    html = `<i class="fas fa-microphone"></i>`;
-    muteButton.classList.toggle("background__red");
+    html = `<i class="fas fa-microphone fa-lg text-green-500"></i>`;
     muteButton.innerHTML = html;
-  }
-});
-
-stopVideo.addEventListener("click", () => {
-  const enabled = myVideoStream.getVideoTracks()[0].enabled;
-  if (enabled) {
-    myVideoStream.getVideoTracks()[0].enabled = false;
-    html = `<i class="fas fa-video-slash"></i>`;
-    stopVideo.classList.toggle("background__red");
-    stopVideo.innerHTML = html;
-  } else {
-    myVideoStream.getVideoTracks()[0].enabled = true;
-    html = `<i class="fas fa-video"></i>`;
-    stopVideo.classList.toggle("background__red");
-    stopVideo.innerHTML = html;
   }
 });
 
@@ -229,10 +205,6 @@ inviteButton.addEventListener("click", (e) => {
     window.location.href
   );
 });
-
-let text = document.querySelector("#chat_message");
-let send = document.getElementById("send");
-let messages = document.querySelector(".messages");
 
 send.addEventListener("click", (e) => {
   if (text.value.length !== 0) {
@@ -248,16 +220,36 @@ text.addEventListener("keydown", (e) => {
   }
 });
 
+sessionClear.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (localStorage.getItem('users') || localStorage.getItem('currentFen')) {
+    localStorage.setItem('users', '');
+    localStorage.setItem('currentFen', '');
+  }
+  location.reload();
+})
+
 socket.on("createMessage", (message, userName) => {
-  console.log('msg');
-  messages.innerHTML =
-    messages.innerHTML +
+  msg = document.createElement('div');
+  msg.innerHTML =
     `<div class="message">
-        <b><i class="far fa-user-circle"></i> <span> ${userName === user ? "me" : userName
-    }</span> </b>
-        <span>${message}</span>
+        <i class="far fa-user-circle text-gray-500"></i> <span class="text-sm text-gray-500"> ${userName}
+    </span>
+        <span class="px-1">${message}</span>
     </div>`;
+  if (userName === user) {
+    msg.classList.add('self')
+  }
+  messages.append(msg);
 });
+
+socket.on("updateUsersList", (userName) => {
+  console.log(userName);
+  var users = localStorage.getItem('users');
+  users.replace(userName, "");
+  console.log(users);
+  localStorage.setItem('users', users);
+})
 
 function saveData(fen) {
   if (fen) {
@@ -268,5 +260,10 @@ function saveData(fen) {
 function appendToStorage(name, data) {
   var old = localStorage.getItem(name);
   if (old === null) old = "";
-  localStorage.setItem(name, old + " " + data);
+  if (old === null) {
+    old = "";
+    localStorage.setItem(name, data);
+  } else {
+    localStorage.setItem(name, old + " " + data);
+  }
 }

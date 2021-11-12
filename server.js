@@ -13,14 +13,18 @@ const io = require('socket.io')(server, {
   }
 });
 const { ExpressPeerServer } = require('peer');
-const peerServer = ExpressPeerServer(server, {
-  debug: true,
-});
+
+// for heroku deployment
 // const peerServer = ExpressPeerServer(server, {
 //   debug: true,
-//   host: '/',
-//   port: '3001'
 // });
+
+// for localhost testing
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+  host: '/',
+  port: '3001'
+});
 
 var indexRouter = require('./routes/index');
 
@@ -34,11 +38,13 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   socket.on('join-room', (roomId, userId, userName) => {
+    socket.username = userName;
     socket.join(roomId);
     socket.broadcast.to(roomId).emit('user-connected', userId, userName);
-    socket.on('user-disconnected', () => {
-      socket.broadcast.to(roomId).emit('user-disconnected', userId, userName)
-    })
+    socket.on('disconnect', () => {
+      var connectionMessage = socket.username + " Disconnected from Socket " + socket.id;
+      io.to(roomId).emit('updateUsersList', socket.username)
+    });
     socket.on("message", (message) => {
       io.to(roomId).emit("createMessage", message, userName);
     });
